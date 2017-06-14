@@ -89,6 +89,7 @@ public class SampleAtmosphereApplicationTests {
 			}
 			else {
 				logger.info("Response not received: latch=" + this.latch.getCount());
+				System.out.println("This is a test");
 			}
 		}
 
