@@ -49,7 +49,9 @@ Here is a quick teaser of a complete Spring Boot application in Java:
 		public static void main(String[] args) throws Exception {
 			SpringApplication.run(Example.class, args);
 		}
-
+  
+  
+  
 	}
 ----
 
