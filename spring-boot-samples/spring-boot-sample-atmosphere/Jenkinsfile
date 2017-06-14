@@ -1,0 +1,89 @@
+pipeline {
+    environment {
+       def project_path = 'spring-boot-samples/spring-boot-sample-atmosphere'
+   }
+    
+    agent any
+    tools {
+        maven 'Maven'
+        jdk 'java'
+    }
+    stages {
+        stage ('Checkout') {
+            steps {
+                git 'https://github.com/vbottu/jenkins2-course-spring-boot.git'
+            }
+        }
+
+        stage ('Build') {
+            steps {
+                dir(project_path) {
+                   sh 'mvn clean install' 
+                } 
+            }
+                
+        }
+        stage ('Archive Artifacts') {
+            steps {
+                dir(project_path) {
+                   archiveArtifacts artifacts: 'target/*.jar', 
+                   fingerprint: true, 
+                   onlyIfSuccessful: true  
+                }
+                      
+            }
+        }
+        stage ('Publish Junit Reports') {
+            steps {
+                dir(project_path) {
+                    junit keepLongStdio: true, 
+                    testResults: 'target/surefire-reports/TEST-*.xml'
+                }
+            }
+        }
+        stage ('Publish HTML Reports') {
+            steps {
+                dir(project_path) {
+                    publishHTML([allowMissing: false, 
+                    alwaysLinkToLastBuild: true, 
+                    keepAll: true, 
+                    reportDir: 'target/site/jacoco/', 
+                    reportFiles: 'index.html', 
+                    reportName: 'HTML Report', 
+                    reportTitles: 'Coverage Report'])
+
+                }
+            }
+        }
+        stage ('Jacoco Code Coverage Report') {
+            steps {
+                dir(project_path) {
+                    jacoco buildOverBuild: true, 
+                    changeBuildStatus: true, 
+                    deltaBranchCoverage: '70', 
+                    deltaClassCoverage: '70', 
+                    deltaComplexityCoverage: '70', 
+                    deltaInstructionCoverage: '70', 
+                    deltaLineCoverage: '70', 
+                    deltaMethodCoverage: '70', 
+                    execPattern: 'target/jacoco.exec', 
+                    maximumBranchCoverage: '70', 
+                    maximumClassCoverage: '70', 
+                    maximumComplexityCoverage: '70', 
+                    maximumInstructionCoverage: '70', 
+                    maximumLineCoverage: '70', 
+                    maximumMethodCoverage: '70', 
+                    minimumBranchCoverage: '70', 
+                    minimumClassCoverage: '70', 
+                    minimumComplexityCoverage: '70', 
+                    minimumInstructionCoverage: '70', 
+                    minimumLineCoverage: '70', 
+                    minimumMethodCoverage: '70', 
+                    sourcePattern: 'main/java/sample/atmosphere/'
+
+                }
+            }
+        }
+       
+    }
+ }
